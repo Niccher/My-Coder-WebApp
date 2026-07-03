@@ -1,87 +1,178 @@
-# My Coder
+# 🚀 My Coder
 
-A professional-grade, containerized CodeIgniter 4 application designed for high performance and security. This boilerplate provides a robust foundation for building modern web applications with Docker orchestration and production-ready configurations.
+> A professional, highly-scalable CodeIgniter 4 web application built for modern workflows.
 
-## Prerequisites
+A sophisticated multi-model AI orchestration platform that harnesses the power of multiple LLMs simultaneously, providing a unified interface for querying and evaluating diverse models like Gemini, DeepSeek, Grok, and OpenAI.
 
-Before getting started, ensure you have the following installed:
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [Composer](https://getcomposer.org/) (Optional, for local development outside Docker)
+[![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?style=for-the-badge&logo=php&logoColor=white)](#)
+[![CodeIgniter 4](https://img.shields.io/badge/CodeIgniter-4.x-EF4223?style=for-the-badge&logo=codeigniter&logoColor=white)](#)
+[![MySQL](https://img.shields.io/badge/MySQL-8.4-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](#)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-## Quick Start (The Docker Way)
+---
 
-Run the following command to build and start the containers:
+## 📖 1. About the Project
 
+**My Coder** is a robust and flexible web application designed to solve complex developer workflows with ease. Built on the lightning-fast CodeIgniter 4 framework, this project acts as a complete, out-of-the-box solution for firing parallel requests to multiple AI models and using a Master model to audit and synthesize the final answer. 
+
+Our target users are developers, power users, and teams looking for an open-source solution that emphasizes performance, security, and developer experience (DX). 
+
+**What makes this project unique?**
+Every component of this application is fully containerized. From the zero-configuration automated database migrations on boot, to the host-mapped persistent storage volumes—this project guarantees a frictionless setup experience whether you are running it on a local machine or deploying it to a cloud server.
+
+---
+
+## ✨ 2. Features
+
+- 🐳 **Instant Setup**: 100% Dockerized architecture. Go from zero to running in under 60 seconds.
+- 🔄 **Automated Migrations**: Database tables and schemas are built automatically when the container boots.
+- 💾 **Smart Persistence**: Database records and uploaded media safely persist on your local filesystem, completely isolated from container lifecycle events.
+- 🛡️ **Hardened Security**: Features built-in CSRF protection, strictly configured session handling, and environment-driven configurations.
+- 📊 **Integrated Database Management**: Comes bundled with a dedicated `phpMyAdmin` container for real-time database visualization.
+
+---
+
+## 🛠️ 3. Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Backend Framework** | [CodeIgniter 4](https://codeigniter.com/) |
+| **Language** | PHP 8.3 |
+| **Database** | MySQL 8.4 |
+| **Database Manager** | phpMyAdmin |
+| **Containerization** | Docker & Docker Compose |
+| **Dependency Manager** | Composer |
+
+---
+
+## 📋 4. Prerequisites
+
+Before you begin, ensure you have the following installed on your machine:
+- [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/)
+- [Git](https://git-scm.com/)
+
+*(If you choose to run without Docker, you will need PHP 8.3+, Composer, and a local MySQL server).*
+
+---
+
+## 🚀 5. Installation & Setup (Detailed)
+
+### Option 1: Using Docker (Preferred & Easiest)
+
+This repository includes a pre-configured `docker-compose.yml` file. It completely eliminates the need to manually install PHP, web servers, or databases on your local machine.
+
+#### 1. Clone the repository
 ```bash
-docker-compose up -d --build
+git clone https://github.com/yourusername/my-coder-webapp.git
+cd "My Coder WebApp"
 ```
 
-Once the containers are running, you can access the application and tools at the following URLs:
+#### 2. Configure Environment Variables
+Copy the provided environment template:
+```bash
+cp .env.example .env
+```
+*(Note: The defaults in `.env.example` are specifically pre-configured to work perfectly with the Docker environment out of the box).*
 
-| Service | URL | Port |
-| :--- | :--- | :--- |
-| **App** | [http://localhost:8080](http://localhost:8080) | 8080 |
-| **phpMyAdmin** | [http://localhost:8081](http://localhost:8081) | 8081 |
+#### 3. Build and Run
+Spin up the application, MySQL database, and phpMyAdmin in detached mode:
+```bash
+docker compose up --build -d
+```
 
-## Directory Structure
+#### 4. Access the Application
+Once the containers finish booting, database migrations run automatically. You can access your services at:
+- **Application**: [http://localhost:9003](http://localhost:9003)
+- **phpMyAdmin**: [http://localhost:9000](http://localhost:9000)
 
-An overview of the project structure:
+**Useful Docker Commands:**
+- Stop the application: `docker compose down`
+- View live application logs: `docker compose logs -f my-coder`
+- Restart the application: `docker compose restart my-coder`
+
+### Option 2: Local Development (Without Docker)
+
+If you prefer a traditional local setup (e.g., XAMPP, Laragon, or Laravel Valet):
+
+1. **Clone the repo** and run `composer install` in the root directory.
+2. **Copy `.env.example`** to `.env`.
+3. **Configure the Database**: Update the `database.default.*` variables inside your `.env` to match your local MySQL credentials.
+4. **Run Migrations**: Build the necessary database tables by executing:
+   ```bash
+   php spark migrate --all
+   ```
+5. **Serve the Application**:
+   ```bash
+   php spark serve
+   ```
+
+---
+
+## 🗄️ 6. Database Configuration
+
+If you are using the Docker setup, the database configuration is completely automated.
+
+**Development Credentials:**
+- **Host:** `mysql`
+- **Database Name:** `db_my_coder`
+- **Username:** `root`
+- **Password:** `root_password`
+
+You can visually manage this database by navigating to [http://localhost:9000](http://localhost:9000) and logging into phpMyAdmin with the credentials above.
+
+---
+
+## 📖 7. Usage
+
+1. **Sign Up / Login**: Navigate to the homepage to create your first administrative account.
+2. **Dashboard**: Access the main dashboard to view analytics and metrics.
+3. **File Management**: Any artifacts or files you upload within the application will be securely persisted inside the `/writable/uploads` directory on your local machine.
+
+---
+
+## 📁 8. Project Structure
 
 ```text
 .
-├── app/            # Application source code (Controllers, Models, Views)
+├── app/            # Core application logic (Controllers, Models, Views)
 ├── public/         # Document root (accessible to the web)
-├── writable/       # Cache, logs, sessions, and debug data
-├── system/         # CodeIgniter 4 core files
-├── vendor/         # Composer dependencies
-├── Dockerfile      # PHP-Apache container configuration
-└── docker-compose.yml
+├── writable/       # Cache, logs, sessions, and persisted uploads
+├── system/         # CodeIgniter 4 framework files
+├── docker-compose.yml # Standalone Docker orchestration
+├── entrypoint.sh   # Automated migration startup script
+└── Dockerfile      # PHP-Apache container build instructions
 ```
 
-- **public/**: This is the web root. Only this folder should be accessible from the web.
-- **app/**: Contains all your application logic.
-- **writable/**: Used by the framework for temporary files. This directory must be writable by the web server.
+---
 
-## Environment Configuration
+## 🤝 9. Contributing
 
-1. Copy the provided environment template:
-   ```bash
-   cp env .env
-   ```
-2. Open `.env` and configure your settings. For Docker environments, ensure the database host is set to `db`:
-   ```ini
-   database.default.hostname = db
-   database.default.database = my_coder
-   database.default.username = user
-   database.default.password = password
-   ```
+We welcome contributions from the community! To contribute:
 
-## Optimization & Build Details
+1. **Fork** the repository.
+2. **Create a new branch**: `git checkout -b feature/your-feature-name`
+3. **Commit your changes**: `git commit -m 'Add some feature'`
+4. **Push to the branch**: `git push origin feature/your-feature-name`
+5. **Open a Pull Request**.
 
-This project uses a carefully crafted `.dockerignore` file to ensure:
-- **Smaller Image Size**: Excludes `.git`, `node_modules`, and IDE configuration files.
-- **Faster Builds**: Only essential source files are copied into the container.
-- **Security**: Sensitive local logs and caches are not included in the production image.
+Please ensure you run tests and verify your changes inside the Docker environment before submitting.
 
-## Database Migrations
+---
 
-To run CodeIgniter 4 migrations inside the Docker container, use the following command:
+## 📄 10. License
 
-```bash
-docker exec -it my_coder_app php spark migrate
-```
+Distributed under the MIT License. See `LICENSE` for more information.
 
-## Security & Permissions
+---
 
-- **File Permissions**: The `writable/` directory is automatically configured with `775` permissions and `www-data` ownership during the Docker build process.
-- **Production Hardening**: The container uses `php.ini-production`, enables `opcache`, and redirects Apache logs to `stdout/stderr` for better observability.
+## 📸 11. Screenshots & Demo
 
-## Contributing
+*(Screenshots coming soon)*
 
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/awesome-feature`).
-3. Commit your changes (`git commit -m 'Add awesome feature'`).
-4. Push to the branch (`git push origin feature/awesome-feature`).
-5. Open a Pull Request.
+---
 
-Please follow the PSR-12 coding standard and include tests for new features.
+## 💬 12. Support & Acknowledgments
+
+- Built with ❤️ using [CodeIgniter 4](https://codeigniter.com/).
+- UI components powered by modern web standards.
