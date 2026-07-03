@@ -1,64 +1,35 @@
-FROM php:8.2-apache
+FROM php:8.3-apache
 
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libicu-dev \
-    libpng-dev \
     libzip-dev \
-    libonig-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     zip \
     unzip \
     git \
-    && rm -rf /var/lib/apt/lists/*
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) intl mysqli pdo_mysql zip gd
 
-# Install PHP extensions
-RUN docker-php-ext-install \
-    intl \
-    mysqli \
-    gd \
-    zip \
-    mbstring \
-    opcache
+# Enable Apache rewrite module
+RUN a2enmod rewrite headers
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
-
-# Use the production configuration
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
-# Configure Opcache and Logging
-RUN { \
-    echo 'opcache.memory_consumption=128'; \
-    echo 'opcache.interned_strings_buffer=8'; \
-    echo 'opcache.max_accelerated_files=4000'; \
-    echo 'opcache.revalidate_freq=60'; \
-    echo 'opcache.fast_shutdown=1'; \
-    echo 'error_log=/dev/stderr'; \
-    echo 'display_errors=Off'; \
-    echo 'log_errors=On'; \
-    } > "$PHP_INI_DIR/conf.d/docker-opcache.ini"
-
-# Redirect Apache logs to stdout/stderr
-RUN ln -sf /dev/stdout /var/log/apache2/access.log && \
-    ln -sf /dev/stderr /var/log/apache2/error.log
-
-# Update Apache configuration for public document root
+# Update Apache configuration for DocumentRoot
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy application files
-COPY . .
+# Copy project files
+COPY . /var/www/html
 
-# Create writable directory structure and set permissions
-RUN mkdir -p writable/cache writable/logs writable/session writable/debugbar && \
-    chown -R www-data:www-data /var/www/html && \
-    chmod -R 775 writable
+# Set permissions for writable directory (create it if not exists)
+RUN mkdir -p /var/www/html/writable \
+    && chown -R www-data:www-data /var/www/html/writable \
+    && chmod -R 775 /var/www/html/writable
 
-# Expose port
 EXPOSE 80
-
-CMD ["apache2-foreground"]
