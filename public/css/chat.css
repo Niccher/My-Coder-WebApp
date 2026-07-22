@@ -4,6 +4,7 @@
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --accent: #3b82f6;
+    --accent2: #8b5cf6;
     --chat-bubble-user: #334155;
     --chat-bubble-ai: transparent;
     --border-color: #334155;
@@ -18,6 +19,7 @@
     --text-main: #657b83;
     --text-muted: #93a1a1;
     --accent: #268bd2;
+    --accent2: #6c71c4;
     --chat-bubble-user: #e9e2cb;
     --chat-bubble-ai: transparent;
     --border-color: #d5ccb7;
@@ -32,6 +34,7 @@
     --text-main: #1d1d1f;
     --text-muted: #86868b;
     --accent: #0066cc;
+    --accent2: #7c3aed;
     --chat-bubble-user: #f0f0f0;
     --chat-bubble-ai: transparent;
     --border-color: #d2d2d7;

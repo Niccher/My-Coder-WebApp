@@ -1,87 +1,81 @@
-<?= $this->extend('auth/layout')?>
+<?= $this->extend('auth/layout') ?>
 
-<?= $this->section('main')?>
+<?= $this->section('card-header') ?>
+<div class="logo-icon"><i class="fa-solid fa-user-plus"></i></div>
+<h4>Create Your Account</h4>
+<p>Start orchestrating multiple AI models in minutes</p>
+<?= $this->endSection() ?>
 
-<form action="<?= url_to('register')?>" method="post">
-    <!-- CSRF Placeholder -->
-    <?= csrf_field()?>
+<?= $this->section('main') ?>
 
-    <?php if (session('error') !== null): ?>
-    <div class="alert alert-danger" role="alert">
-        <?= session('error')?>
+<?php if (session('error') !== null): ?>
+    <div class="alert alert-danger alert-custom d-flex align-items-center gap-2">
+        <i class="fa-solid fa-circle-exclamation"></i> <?= session('error') ?>
     </div>
-    <?php
-elseif (session('errors') !== null): ?>
-    <div class="alert alert-danger" role="alert">
+<?php elseif (session('errors') !== null): ?>
+    <div class="alert alert-danger alert-custom">
         <?php if (is_array(session('errors'))): ?>
-        <?php foreach (session('errors') as $error): ?>
-        <?= $error?>
-        <br>
-        <?php
-        endforeach ?>
-        <?php
-    else: ?>
-        <?= session('errors')?>
-        <?php
-    endif ?>
+            <?php foreach (session('errors') as $error): ?>
+                <div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-exclamation"></i> <?= $error ?></div>
+            <?php endforeach ?>
+        <?php else: ?>
+            <div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-exclamation"></i> <?= session('errors') ?></div>
+        <?php endif ?>
     </div>
-    <?php
-endif ?>
+<?php endif ?>
+
+<form action="<?= url_to('register') ?>" method="post">
+    <?= csrf_field() ?>
 
     <div class="mb-3">
-        <label for="username" class="form-label small fw-semibold text-muted mb-1">Username</label>
-        <div class="input-group">
-            <span class="input-group-text bg-transparent border-end-0 text-muted"
-                style="border-color: var(--border-color);">
-                <i class="fa-regular fa-user"></i>
-            </span>
-            <input type="text" class="form-control auth-input border-start-0 ps-0" id="username" name="username"
-                placeholder="domino_ai" required autocomplete="username">
-        </div>
-    </div>
-    
-    <div class="mb-3">
-        <label for="email" class="form-label small fw-semibold text-muted mb-1">Email Address</label>
-        <div class="input-group">
-            <span class="input-group-text bg-transparent border-end-0 text-muted"
-                style="border-color: var(--border-color);">
-                <i class="fa-solid fa-at"></i>
-            </span>
-            <input type="email" class="form-control auth-input border-start-0 ps-0" id="email" name="email"
-                placeholder="name@example.com" required autocomplete="email">
+        <label for="username" class="form-label form-label-custom">Username</label>
+        <div class="input-group input-group-custom">
+            <span class="input-group-text"><i class="fa-regular fa-user"></i></span>
+            <input type="text" class="form-control auth-input" id="username" name="username"
+                   placeholder="Choose a username" required autocomplete="username">
         </div>
     </div>
 
     <div class="mb-3">
-        <label for="password" class="form-label small fw-semibold text-muted mb-1">Password</label>
-        <div class="input-group">
-            <span class="input-group-text bg-transparent border-end-0 text-muted"
-                style="border-color: var(--border-color);">
-                <i class="fa-solid fa-lock"></i>
-            </span>
-            <input type="password" class="form-control auth-input border-start-0 ps-0" id="password" name="password"
-                placeholder="Create a strong password" required autocomplete="new-password">
+        <label for="email" class="form-label form-label-custom">Email Address</label>
+        <div class="input-group input-group-custom">
+            <span class="input-group-text"><i class="fa-solid fa-at"></i></span>
+            <input type="email" class="form-control auth-input" id="email" name="email"
+                   placeholder="name@example.com" required autocomplete="email">
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label form-label-custom">Password</label>
+        <div class="input-group input-group-custom">
+            <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+            <input type="password" class="form-control auth-input" id="password" name="password"
+                   placeholder="Create a strong password" required autocomplete="new-password">
         </div>
     </div>
 
     <div class="mb-4">
-        <label for="password_confirm" class="form-label small fw-semibold text-muted mb-1">Confirm Password</label>
-        <div class="input-group">
-            <span class="input-group-text bg-transparent border-end-0 text-muted"
-                style="border-color: var(--border-color);">
-                <i class="fa-solid fa-shield-halved"></i>
-            </span>
-            <input type="password" class="form-control auth-input border-start-0 ps-0" id="password_confirm"
-                name="password_confirm" placeholder="Repeat your password" required autocomplete="new-password">
+        <label for="password_confirm" class="form-label form-label-custom">Confirm Password</label>
+        <div class="input-group input-group-custom">
+            <span class="input-group-text"><i class="fa-solid fa-shield-halved"></i></span>
+            <input type="password" class="form-control auth-input" id="password_confirm" name="password_confirm"
+                   placeholder="Repeat your password" required autocomplete="new-password">
         </div>
     </div>
 
-    <button type="submit" class="auth-btn mb-4">Create Account</button>
-
-    <div class="text-center">
-        <span class="text-muted small">Already have an account? </span>
-        <a href="<?= base_url('login')?>" class="auth-link">Sign In</a>
-    </div>
+    <button type="submit" class="auth-btn">
+        <i class="fa-solid fa-rocket me-2"></i>Create Account
+    </button>
 </form>
 
-<?= $this->endSection()?>
+<div class="auth-divider">
+    <span>Already registered?</span>
+</div>
+
+<div class="text-center">
+    <a href="<?= base_url('login') ?>" class="auth-link">
+        Sign in to your account <i class="fa-solid fa-arrow-right ms-1"></i>
+    </a>
+</div>
+
+<?= $this->endSection() ?>

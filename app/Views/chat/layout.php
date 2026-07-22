@@ -34,7 +34,13 @@
     <link rel="stylesheet" href="<?= base_url('css/chat.css')?>?v=<?= time() ?>">
 </head>
 
-<body>
+<body data-theme="dark">
+    <script>
+        (function() {
+            var theme = localStorage.getItem('chat-theme');
+            if (theme) document.body.setAttribute('data-theme', theme);
+        })();
+    </script>
 
     <div class="d-flex" id="app-layout">
         <!-- Sidebar Backdrop -->

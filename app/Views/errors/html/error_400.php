@@ -17,7 +17,7 @@ include __DIR__ . '/_header.php';
 <?php endif ?>
 
 <a href="<?= base_url() ?>" class="error-btn">
-    <i class="fa-solid fa-house me-2"></i> Return to Main Application
+    <i class="fa-solid fa-house me-2"></i> Return Home
 </a>
 
 <?php include __DIR__ . '/_footer.php'; ?>

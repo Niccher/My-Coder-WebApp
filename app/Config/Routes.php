@@ -5,7 +5,14 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Chat::index', ['filter' => 'session']);
+// Public landing pages
+$routes->get('/', 'Landing::index');
+$routes->get('/features', 'Landing::features');
+$routes->get('/how-it-works', 'Landing::howItWorks');
+$routes->get('/models', 'Landing::models');
+$routes->get('/docker-setup', 'Landing::dockerSetup');
+$routes->get('/faq', 'Landing::faq');
+$routes->get('/chat', 'Chat::index', ['filter' => 'session']);
 $routes->get('/c/(:segment)', 'Chat::index/$1', ['filter' => 'session']);
 
 // API routes — all require session auth
@@ -55,7 +62,11 @@ $routes->group('debug', static function ($routes) {
     $routes->get('400', static fn() => view('errors/html/error_400', ['message' => 'Invalid parameters sent.']));
     $routes->get('401', static fn() => view('errors/html/error_401', ['message' => 'Session expired.']));
     $routes->get('403', static fn() => view('errors/html/error_403', ['message' => 'Access to this resource requires admin privileges.']));
-    $routes->get('404', static fn() => view('errors/html/error_404', ['message' => 'The controller was not found.']));
+    $routes->get('404', static fn() => view('errors/html/error_404', ['message' => 'The page you requested was not found.']));
     $routes->get('500', static fn() => view('errors/html/production', ['message' => 'Database connection failed.']));
+    $routes->get('502', static fn() => view('errors/html/error_502', ['message' => 'Upstream server returned an invalid response.']));
+    $routes->get('503', static fn() => view('errors/html/error_503', ['message' => 'Server is undergoing scheduled maintenance.']));
+    $routes->get('4xx', static fn() => view('errors/html/error_4xx', ['message' => 'Generic client error.']));
+    $routes->get('5xx', static fn() => view('errors/html/error_5xx', ['message' => 'Generic server error.']));
 });
 
