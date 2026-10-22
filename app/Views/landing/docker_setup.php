@@ -122,10 +122,10 @@ volumes:
         </div>
 
         <h5 class="fw-semibold mt-5 mb-2">Dockerfile</h5>
-        <p style="color: var(--landing-muted);">The application container is built from <code>php:8.3-apache</code> with these additions:</p>
+        <p style="color: var(--landing-muted);">The application container is built from <code>php:8.4.27-apache</code> with these additions:</p>
         <div class="docker-block">
             <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-clipboard me-1"></i>Copy</button>
-            <pre><code>FROM php:8.3-apache
+            <pre><code>FROM php:8.4.27-apache
 
 # System dependencies
 RUN apt-get update && apt-get install -y \

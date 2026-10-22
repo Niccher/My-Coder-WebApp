@@ -1,39 +1,27 @@
-# Local environment files
+# Environments
 .env
-.env.local
-
-# Git
-.git
-.gitignore
-.gitattributes
-
-# Development logs and cache
-writable/logs/*
-writable/cache/*
-writable/session/*
-writable/debugbar/*
-
-# Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Docker files
-Dockerfile
-docker-compose.yml
-.dockerignore
+.env.*
 
 # IDEs
 .idea/
 .vscode/
-*.swp
-*.swo
 
-# Vendor (build within container or ignore if using local vendor)
-# vendor/ 
+# Git
+.git/
+.gitignore
 
-# Miscellaneous
-composer.lock
-phpunit.xml
-tests/
+# Dependencies
+vendor/
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Build
+build/
+dist/
+
+# OS
+.DS_Store

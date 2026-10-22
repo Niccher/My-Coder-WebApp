@@ -1,9 +1,54 @@
-writable/*
-
+# Environments
 .env
+.env.*
+!.env.example
 
-# Ignore writable logs and debugbar
-writable/logs/*
-!writable/logs/index.html
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Dependencies
+vendor/
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Build
+build/
+dist/
+*.apk
+*.aab
+*.jar
+*.war
+
+# Logs and DB
+logs/
+*.log
+*.sqlite
+*.sqlite3
+
+# OS
+.DS_Store
+Thumbs.db
+
+# CodeIgniter writable runtime files
+writable/cache/*
+!writable/cache/index.html
+!writable/cache/.gitkeep
 writable/debugbar/*
 !writable/debugbar/index.html
+!writable/debugbar/.gitkeep
+writable/logs/*
+!writable/logs/index.html
+!writable/logs/.gitkeep
+writable/session/*
+!writable/session/index.html
+!writable/session/.gitkeep
+writable/uploads/*
+!writable/uploads/index.html
+!writable/uploads/.gitkeep
