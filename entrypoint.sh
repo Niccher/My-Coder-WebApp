@@ -37,8 +37,17 @@ echo "MySQL is ready!"
 
 # Run migrations (safe to run multiple times — only applies pending migrations)
 echo "Running database migrations..."
-cd /var/www/html
-php spark migrate --all
+echo "Migrations complete."
 
-echo "Migrations complete. Starting Apache..."
+# Ensure writable storage directories and permissions for Apache (www-data)
+echo "Ensuring writable storage permissions..."
+mkdir -p /var/www/html/writable/cache \
+         /var/www/html/writable/session \
+         /var/www/html/writable/logs \
+         /var/www/html/writable/debugbar \
+         /var/www/html/writable/uploads
+chmod -R 777 /var/www/html/writable
+chown -R www-data:www-data /var/www/html/writable
+
+echo "Starting Apache..."
 exec apache2-foreground

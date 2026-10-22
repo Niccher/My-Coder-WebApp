@@ -218,8 +218,13 @@ log "Building and orchestrating services (MySQL, WebApp, Dozzle)..."
 docker compose up --build -d
 log "Container orchestration launched."
 
-# ── 7. Wait for MySQL Health ──────────────────────────────────────────────────
-section "7. Waiting for Database Health"
+# ── 7. Enforcing Permissions on writable/ ─────────────────────────────────────
+section "7. Enforcing Permissions on writable/"
+docker compose exec -T my-coder bash -c "mkdir -p /var/www/html/writable/cache /var/www/html/writable/session /var/www/html/writable/logs /var/www/html/writable/debugbar /var/www/html/writable/uploads && chmod -R 777 /var/www/html/writable && chown -R www-data:www-data /var/www/html/writable"
+log "Enforced permissions (777 / www-data) on writable storage."
+
+# ── 8. Wait for MySQL Health ──────────────────────────────────────────────────
+section "8. Waiting for Database Health"
 log "Waiting for MySQL container health probe on internal port 3306..."
 MAX_ATTEMPTS=40
 ATTEMPT=0
@@ -267,8 +272,8 @@ else
     err "MySQL container is running but port 3306 refused connection from WebApp container."
 fi
 
-# ── 8. Execute Database Migrations ────────────────────────────────────────────
-section "8. Running Database Migrations"
+# ── 9. Execute Database Migrations ────────────────────────────────────────────
+section "9. Running Database Migrations"
 log "Running CodeIgniter Spark migrations inside WebApp container..."
 MIGRATE_OUT=$(docker compose exec -T my-coder php spark migrate --all 2>&1 || true)
 echo "$MIGRATE_OUT"
@@ -292,8 +297,8 @@ fi
 
 log "Database migrations executed successfully (${TABLE_COUNT} tables present)."
 
-# ── 9. Verify Dozzle Log Viewer Readiness ─────────────────────────────────────
-section "9. Verifying Dozzle Log Viewer"
+# ── 10. Verify Dozzle Log Viewer Readiness ────────────────────────────────────
+section "10. Verifying Dozzle Log Viewer"
 DOZZLE_READY=false
 for i in {1..15}; do
     if curl -sf --max-time 2 http://localhost:8080/ >/dev/null 2>&1; then
@@ -309,8 +314,8 @@ else
     warn "Dozzle did not respond on :8080 immediately (it may still be initializing)."
 fi
 
-# ── 10. Verify WebApp Server Readiness ────────────────────────────────────────
-section "10. Verifying WebApp Health"
+# ── 11. Verify WebApp Server Readiness ────────────────────────────────────────
+section "11. Verifying WebApp Health"
 APP_READY=false
 for i in {1..20}; do
     HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 3 http://localhost/ || echo "000")
@@ -324,15 +329,14 @@ done
 if [ "$APP_READY" = true ]; then
     log "WebApp HTTP probe passed (Status: ${HTTP_CODE})."
 else
-    warn "Recent WebApp container logs for diagnosis:"
-    docker compose logs --tail=30 my-coder || true
+    warn "Diagnostic: Dumping HTTP error page from http://localhost/:"
+    curl -sS --max-time 3 http://localhost/ | grep -A 4 -B 2 -iE "<title>|exception|error|whoops" | head -n 25 || true
+    warn "Diagnostic: Recent CodeIgniter logs:"
+    docker compose exec -T my-coder bash -c "tail -n 25 /var/www/html/writable/logs/*.log 2>/dev/null || true"
+    warn "Diagnostic: Recent Apache error log:"
+    docker compose exec -T my-coder tail -n 25 /var/log/apache2/error.log 2>/dev/null || true
     err "WebApp failed readiness probe on http://localhost/ (HTTP code: ${HTTP_CODE})."
 fi
-
-# ── 11. Container Permissions Enforcement ─────────────────────────────────────
-section "11. Enforcing Permissions on writable/"
-docker compose exec -T my-coder bash -c "mkdir -p /var/www/html/writable/cache /var/www/html/writable/session /var/www/html/writable/logs && chown -R www-data:www-data /var/www/html/writable && chmod -R 775 /var/www/html/writable"
-log "Enforced permissions (775 / www-data) on writable storage."
 
 # ── 12. Housekeeping & Docker Cache Pruning ───────────────────────────────────
 section "12. Housekeeping & Cache Pruning"
