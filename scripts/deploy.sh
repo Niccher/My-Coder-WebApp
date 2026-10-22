@@ -18,11 +18,11 @@
 #   4. Write / Patch .env Configuration (Dynamic IP & Encryption Key)
 #   5. Stop Old Containers & Clear Name Conflicts
 #   6. Build & Start Containers (MySQL, WebApp, Dozzle)
-#   7. Wait for MySQL Database Health (:3306)
-#   8. Execute Database Migrations (php spark migrate --all)
-#   9. Verify Dozzle Log Viewer Readiness (:8080)
-#  10. Verify WebApp Server Readiness (:80)
-#  11. Container Permissions Enforcement (writable/)
+#   7. Enforce Permissions on Storage (writable/)
+#   8. Wait for MySQL Database Health (:3306)
+#   9. Execute Database Migrations (php spark migrate --all)
+#  10. Verify Dozzle Log Viewer Readiness (:8080)
+#  11. Verify WebApp Server Readiness (:80)
 #  12. Housekeeping & Docker Cache Pruning
 #  13. Clean Execution Timeline & Access Summary
 # ==============================================================================
