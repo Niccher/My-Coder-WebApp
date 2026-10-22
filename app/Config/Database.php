@@ -33,10 +33,10 @@ class Database extends Config
 //        'DBDriver'     => 'MySQLi',
     public array $default = [
         'DSN'          => '',
-        'hostname'     => '127.0.0.1',
+        'hostname'     => 'mysql',
         'username'     => 'root',
-        'password'     => '',
-        'database'     => 'chegecac_my_coder',
+        'password'     => 'root_password',
+        'database'     => 'db_my_coder',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
@@ -48,7 +48,7 @@ class Database extends Config
         'compress'     => false,
         'strictOn'     => false,
         'failover'     => [],
-        'port'         => 3305,
+        'port'         => 3306,
         'numberNative' => false,
         'foundRows'    => false,
         'dateFormat'   => [

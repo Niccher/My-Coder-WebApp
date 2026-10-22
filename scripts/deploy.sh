@@ -178,6 +178,25 @@ else
     log "Appended app.baseURL: ${TARGET_BASE_URL}"
 fi
 
+# Ensure database settings in .env match the Docker MySQL service
+set_or_replace_env() {
+    local key="$1"
+    local value="$2"
+    if grep -q "^${key}" .env; then
+        sed -i "s|^${key}.*|${key} = ${value}|" .env
+    else
+        echo "${key} = ${value}" >> .env
+    fi
+}
+
+set_or_replace_env "database.default.hostname" "mysql"
+set_or_replace_env "database.default.database" "db_my_coder"
+set_or_replace_env "database.default.username" "root"
+set_or_replace_env "database.default.password" "root_password"
+set_or_replace_env "database.default.DBDriver" "MySQLi"
+set_or_replace_env "database.default.port" "3306"
+log "Configured database settings in .env for container network (mysql:3306/db_my_coder)."
+
 # Ensure encryption key exists
 CURRENT_KEY=$(grep "^encryption.key" .env | awk -F'=' '{print $2}' | tr -d " '" || true)
 if [ -z "$CURRENT_KEY" ] || [ "$CURRENT_KEY" = "hex2bin:" ]; then
@@ -218,17 +237,60 @@ while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
 done
 echo ""
 
-if [ "$DB_HEALTHY" = true ]; then
-    log "MySQL 8.4 is healthy and accepting queries."
-else
+if [ "$DB_HEALTHY" != true ]; then
     err "MySQL failed to reach healthy status within 80 seconds."
+fi
+
+log "Verifying TCP connection and query readiness from WebApp container..."
+TCP_READY=false
+for i in {1..20}; do
+    if docker compose exec -T my-coder php -r '
+        mysqli_report(MYSQLI_REPORT_OFF);
+        $m = @new mysqli("mysql", "root", "root_password", "db_my_coder", 3306);
+        if (!$m->connect_error) {
+            $res = $m->query("SELECT 1");
+            if ($res) { exit(0); }
+        }
+        exit(1);
+    ' >/dev/null 2>&1; then
+        TCP_READY=true
+        break
+    fi
+    echo -n "."
+    sleep 1
+done
+echo ""
+
+if [ "$TCP_READY" = true ]; then
+    log "MySQL 8.4 is healthy and accepting queries on port 3306."
+else
+    err "MySQL container is running but port 3306 refused connection from WebApp container."
 fi
 
 # ── 8. Execute Database Migrations ────────────────────────────────────────────
 section "8. Running Database Migrations"
 log "Running CodeIgniter Spark migrations inside WebApp container..."
-docker compose exec -T my-coder php spark migrate --all
-log "Database migrations executed successfully."
+MIGRATE_OUT=$(docker compose exec -T my-coder php spark migrate --all 2>&1 || true)
+echo "$MIGRATE_OUT"
+
+if echo "$MIGRATE_OUT" | grep -qiE "DatabaseException|Connection refused|Unable to connect"; then
+    err "Database migration failed due to a database exception."
+fi
+
+# Verify core tables were created
+TABLE_COUNT=$(docker compose exec -T my-coder php -r '
+    mysqli_report(MYSQLI_REPORT_OFF);
+    $m = @new mysqli("mysql", "root", "root_password", "db_my_coder", 3306);
+    if (!$m || $m->connect_error) { echo "0"; exit; }
+    $res = $m->query("SHOW TABLES");
+    echo $res ? $res->num_rows : "0";
+' 2>/dev/null || echo "0")
+
+if [ "$TABLE_COUNT" -eq 0 ]; then
+    err "Database migration completed without error, but 0 tables exist in db_my_coder."
+fi
+
+log "Database migrations executed successfully (${TABLE_COUNT} tables present)."
 
 # ── 9. Verify Dozzle Log Viewer Readiness ─────────────────────────────────────
 section "9. Verifying Dozzle Log Viewer"
@@ -262,6 +324,8 @@ done
 if [ "$APP_READY" = true ]; then
     log "WebApp HTTP probe passed (Status: ${HTTP_CODE})."
 else
+    warn "Recent WebApp container logs for diagnosis:"
+    docker compose logs --tail=30 my-coder || true
     err "WebApp failed readiness probe on http://localhost/ (HTTP code: ${HTTP_CODE})."
 fi
 

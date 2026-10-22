@@ -13,11 +13,11 @@ services:
       MYSQL_DATABASE: db_my_coder
     command: --sql-mode="STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
-      interval: 10s
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -proot_password && mysql -h 127.0.0.1 -u root -proot_password -e 'SELECT 1;' db_my_coder >/dev/null 2>&1"]
+      interval: 5s
       timeout: 5s
-      retries: 10
-      start_period: 30s
+      retries: 20
+      start_period: 15s
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -42,6 +42,18 @@ services:
     container_name: my-coder-webapp
     ports:
       - "80:80"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=root_password
+      - DB_DATABASE=db_my_coder
+      - database.default.hostname=mysql
+      - database.default.database=db_my_coder
+      - database.default.username=root
+      - database.default.password=root_password
+      - database.default.port=3306
+      - database.default.DBDriver=MySQLi
     volumes:
       - .:/var/www/html
     depends_on:
