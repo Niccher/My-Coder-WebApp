@@ -144,7 +144,7 @@ $(document).ready(function() {
 
 
     window.loadFolders = function() {
-        $.getJSON('/api/folders', function(data) {
+        $.getJSON('/api/v1/folders', function(data) {
             const $container = $('#folders-container');
             $container.empty();
             
@@ -187,7 +187,7 @@ $(document).ready(function() {
         const name = prompt('Enter folder name:');
         if (!name) return;
         $.ajax({
-            url: '/api/folders',
+            url: '/api/v1/folders',
             method: 'POST',
             data: JSON.stringify({ name: name }),
             contentType: 'application/json',
@@ -202,7 +202,7 @@ $(document).ready(function() {
         const id = $(this).data('id');
         if (!confirm('Delete folder? (Chats will be moved to Recent)')) return;
         $.ajax({
-            url: `/api/folders/${id}`,
+            url: `/api/v1/folders/${id}`,
             method: 'DELETE',
             success: function() {
                 window.loadFolders();
@@ -213,7 +213,7 @@ $(document).ready(function() {
 
     window.loadConversations = function() {
         const $recentList = $('#recent-chats-list');
-        $.getJSON('/api/conversations', function(data) {
+        $.getJSON('/api/v1/conversations', function(data) {
             $recentList.find('.history-item, .no-chats').remove();
             $('.folder-items').empty();
 
@@ -286,7 +286,7 @@ $(document).ready(function() {
 
             const $folderList = $('#modal-folder-list');
             $folderList.empty();
-            $.getJSON('/api/folders', function(folders) {
+            $.getJSON('/api/v1/folders', function(folders) {
                 folders.forEach(f => {
                     const isCurrent = (f.id == currentFolderId);
                     const activeClass = isCurrent ? 'bg-primary bg-opacity-10 fw-bold' : '';
@@ -348,7 +348,7 @@ $(document).ready(function() {
         const $btn = $(this);
         $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i>');
         $.ajax({
-            url: '/api/folders',
+            url: '/api/v1/folders',
             method: 'POST',
             data: JSON.stringify({ name: name }),
             contentType: 'application/json',
@@ -374,7 +374,7 @@ $(document).ready(function() {
 
     function moveChatToFolder(convId, folderId) {
         $.ajax({
-            url: `/api/conversations/${convId}/folder`,
+            url: `/api/v1/conversations/${convId}/folder`,
             method: 'PATCH',
             data: JSON.stringify({ folder_id: folderId }),
             contentType: 'application/json',
@@ -391,7 +391,7 @@ $(document).ready(function() {
         e.preventDefault();
         if (!confirm('Delete this conversation?')) return;
         $.ajax({
-            url: `/api/conversations/${activeActionConvId}`,
+            url: `/api/v1/conversations/${activeActionConvId}`,
             method: 'DELETE',
             success: function() {
                 actionsModalInstance.hide();
@@ -413,7 +413,7 @@ $(document).ready(function() {
         const id = $(this).data('id');
         if (!confirm('Delete this conversation?')) return;
         $.ajax({
-            url: `/api/conversations/${id}`,
+            url: `/api/v1/conversations/${id}`,
             method: 'DELETE',
             success: function() {
                 if (currentConversationId == id) {
@@ -445,7 +445,7 @@ $(document).ready(function() {
         userMessageIndex = 0; // reset branch index
         $chatContainer.empty().append('<div class="text-center mt-5 text-muted"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i> Loading...</div>');
         
-        $.getJSON(`/api/conversations/${id}`, function(data) {
+        $.getJSON(`/api/v1/conversations/${id}`, function(data) {
             currentConversationId = data.id;
             activePersonaId = data.persona_id || 0;
             $('#current-persona-name').text(data.persona_name || 'Default Assistant');
@@ -603,7 +603,7 @@ $(document).ready(function() {
 
         // POST to real backend
         currentChatRequest = $.ajax({
-            url: '/api/chat',
+            url: '/api/v1/chat',
             method: 'POST',
             contentType: 'application/json',
             timeout: 300000, // 5 minutes
@@ -947,7 +947,7 @@ $(document).ready(function() {
 
     function loadPaginatedHistory() {
         $('#allHistoryList').html('<div class="text-center text-muted my-4"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i></div>');
-        $.getJSON(`/api/conversations/paginated?page=${historyPage}&search=${encodeURIComponent(historySearch)}`, function(res) {
+        $.getJSON(`/api/v1/conversations/paginated?page=${historyPage}&search=${encodeURIComponent(historySearch)}`, function(res) {
             $('#allHistoryList').empty();
             if (!res.data || res.data.length === 0) {
                 $('#allHistoryList').html('<div class="text-center text-muted my-4">No conversations found.</div>');
@@ -1067,7 +1067,7 @@ $(document).ready(function() {
         $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i>');
 
         $.ajax({
-            url: `/api/conversations/${currentConversationId}/branch`,
+            url: `/api/v1/conversations/${currentConversationId}/branch`,
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ message_id: msgId }),
@@ -1126,7 +1126,7 @@ $(document).ready(function() {
         const originalIconClass = $icon.attr('class');
         $icon.attr('class', 'fa-solid fa-circle-notch fa-spin me-2 opacity-50');
 
-        $.getJSON(`/api/conversations/${currentConversationId}`, function(data) {
+        $.getJSON(`/api/v1/conversations/${currentConversationId}`, function(data) {
             const title = (data.title && data.title !== 'New Chat') ? data.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'chat_export';
             const filename = `${title}_${new Date().toISOString().slice(0,10)}`;
 
@@ -1223,7 +1223,7 @@ $(document).ready(function() {
 
     // --- Multi-Persona Management ---
     function loadPersonas() {
-        $.getJSON('/api/personas', function(data) {
+        $.getJSON('/api/v1/personas', function(data) {
             // Populate Settings List
             const $list = $('#personas-list-container');
             $list.empty();
@@ -1319,7 +1319,7 @@ $(document).ready(function() {
         $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Saving...');
 
         $.ajax({
-            url: '/api/personas',
+            url: '/api/v1/personas',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data),
@@ -1338,7 +1338,7 @@ $(document).ready(function() {
         if (!confirm('Are you sure you want to delete this persona?')) return;
         const id = $(this).data('id');
         $.ajax({
-            url: `/api/personas/${id}`,
+            url: `/api/v1/personas/${id}`,
             method: 'DELETE',
             success: function() {
                 showToast('Persona deleted.', 'success');
@@ -1421,7 +1421,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: '/api/user/profile',
+            url: '/api/v1/user/profile',
             method: 'POST',
             data: formData,
             processData: false,

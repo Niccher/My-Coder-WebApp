@@ -4,11 +4,11 @@
  * ChatController — Handles real multi-model AI requests and master model evaluation.
  *
  * Slot assignments:
- *   Slots 1–3: Regular AI models (Gemini, DeepSeek, Grok, etc.)
- *   Slot 4:    Master Model — evaluates the 3 responses and picks the best
+ *   Slots 1–6: Regular AI models (Gemini, DeepSeek, Grok, OpenAI, Kimi, MiniMax, Groq, OpenRouter)
+ *   Slot 7:    Master Model — evaluates the active model responses and synthesizes ranking
  *
  * Each model is identified by a 'provider' to determine which API to call.
- * Supported providers: gemini | deepseek | grok | openai
+ * Supported providers: gemini | deepseek | grok | openai | kimi | minimax | groq | openrouter
  */
 
 namespace App\Controllers\Api;
@@ -25,7 +25,7 @@ class ChatController extends BaseController
     use ResponseTrait;
 
     /**
-     * POST /api/chat
+     * POST /api/v1/chat
      *
      * Body (JSON):
      *   prompt          string  — The user's message
@@ -265,7 +265,7 @@ class ChatController extends BaseController
                 return $this->createCurlPost($url, $payload, [
                     'Content-Type: application/json',
                     "Authorization: Bearer {$apiKey}",
-                    "HTTP-Referer: https://mycoder.chegecache.co.ke",
+                    "HTTP-Referer: " . base_url(),
                     "X-Title: My Coder Chat"
                 ]);
 

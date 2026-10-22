@@ -613,7 +613,7 @@ $(document).ready(function () {
     loadModelSettings();
 
     function loadModelSettings() {
-        $.getJSON('/api/settings', function (data) {
+        $.getJSON('/api/v1/settings', function (data) {
             $.each(data, function (slot, s) {
                 slot = parseInt(slot);
                 // -- Settings modal --
@@ -721,7 +721,7 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url:         '/api/settings',
+            url:         '/api/v1/settings',
             method:      'POST',
             contentType: 'application/json',
             data:        JSON.stringify({ slots }),

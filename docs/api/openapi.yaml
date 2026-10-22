@@ -1,0 +1,182 @@
+openapi: 3.0.3
+info:
+  title: My Coder WebApp REST API
+  description: Multi-model AI orchestration platform API for parallel chat inference, persona management, conversation threading, and user slot settings.
+  version: 1.0.0
+servers:
+  - url: http://localhost/api/v1
+    description: Production & Local Docker v1 API endpoint
+
+paths:
+  /chat:
+    post:
+      summary: Send a chat prompt to all configured models
+      description: Dispatches the user prompt to all active slots concurrently via curl_multi and returns synthesized Master Model evaluation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  example: "Write a clean binary search algorithm in Python."
+                conversation_id:
+                  type: integer
+                  nullable: true
+                  example: 12
+                persona_id:
+                  type: integer
+                  nullable: true
+                  example: 2
+                file_context:
+                  type: string
+                  nullable: true
+                  description: Text extracted in-browser from attached files.
+      responses:
+        '200':
+          description: Prompt processed successfully.
+        '422':
+          description: Validation failure (e.g. empty prompt).
+
+  /settings:
+    get:
+      summary: Get active user model slots
+      responses:
+        '200':
+          description: List of 7 configured slots with masked API keys.
+    post:
+      summary: Save model slot configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slots:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      slot:
+                        type: integer
+                      provider:
+                        type: string
+                        enum: [gemini, deepseek, grok, openai, kimi, minimax, groq]
+                      model_name:
+                        type: string
+                      api_key:
+                        type: string
+                      history_limit:
+                        type: integer
+      responses:
+        '200':
+          description: Settings successfully encrypted and updated.
+
+  /conversations:
+    get:
+      summary: List all user conversations
+      responses:
+        '200':
+          description: Array of conversation metadata objects.
+
+  /conversations/{id}:
+    get:
+      summary: Fetch conversation details and messages
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Conversation details with ordered message history.
+    delete:
+      summary: Delete a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Conversation successfully removed.
+
+  /conversations/{id}/branch:
+    post:
+      summary: Fork a conversation from a specific message
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message_id
+              properties:
+                message_id:
+                  type: integer
+      responses:
+        '200':
+          description: Forked conversation created.
+
+  /personas:
+    get:
+      summary: List custom personas
+      responses:
+        '200':
+          description: Array of personas.
+    post:
+      summary: Create or update a persona
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - instructions
+              properties:
+                name:
+                  type: string
+                instructions:
+                  type: string
+      responses:
+        '200':
+          description: Persona saved.
+
+  /folders:
+    get:
+      summary: List conversation folders
+      responses:
+        '200':
+          description: Array of folders.
+    post:
+      summary: Create a folder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Folder created.

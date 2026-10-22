@@ -1,0 +1,35 @@
+site_name: My Coder WebApp Documentation
+site_description: Engineering and user documentation for My Coder WebApp (Multi-Model AI Orchestrator)
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: indigo
+    accent: cyan
+  features:
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+
+nav:
+  - Home: README.md
+  - User Guide:
+      - Setup and Run: docs/user/setup-and-run.md
+      - Configuration: docs/user/configuration.md
+      - Troubleshooting: docs/user/troubleshooting.md
+  - Architecture:
+      - Overview: docs/architecture/overview.md
+      - Communication & Flows: docs/architecture/communication.md
+      - Data & Storage: docs/architecture/data-and-storage.md
+  - API Reference:
+      - OpenAPI Specification: docs/api/openapi.yaml
+  - Services:
+      - CodeIgniter 4: docs/services/codeigniter.md
+  - Engineering:
+      - Local Development: docs/engineering/local-development.md
+      - Making Changes: docs/engineering/making-changes.md
+  - Runbooks:
+      - Container Restarts: docs/runbooks/restart.md
+      - Backup and Restore: docs/runbooks/backup-and-restore.md
+  - ADRs:
+      - 0001 Multi-Model Master Synthesis: docs/adr/0001-multi-model-master-synthesis.md

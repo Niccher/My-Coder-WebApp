@@ -1,15 +1,13 @@
-version: '3.8'
-
 # Standalone Docker Compose for My Coder WebApp
 # Usage: docker compose up --build -d
-# This will spin up the webapp, MySQL, and phpMyAdmin.
+# This will spin up the webapp, MySQL, and Dozzle log viewer.
 
 services:
   mysql:
     image: mysql:8.4
     container_name: shared-mysql
     ports:
-      - "9306:3306"
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: db_my_coder
@@ -25,19 +23,14 @@ services:
     networks:
       - shared-network
 
-  phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: shared-phpmyadmin
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: shared-dozzle
+    restart: unless-stopped
     ports:
-      - "9000:80"
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_USER: root
-      PMA_PASSWORD: root_password
-    depends_on:
-      mysql:
-        condition: service_healthy
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - shared-network
 
@@ -48,7 +41,7 @@ services:
     image: my-coder-webapp:latest
     container_name: my-coder-webapp
     ports:
-      - "9003:80"
+      - "80:80"
     volumes:
       - .:/var/www/html
     depends_on:

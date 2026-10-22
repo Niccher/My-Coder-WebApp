@@ -12,7 +12,7 @@ class UserController extends BaseController
     use ResponseTrait;
 
     /**
-     * POST /api/user/profile
+     * POST /api/v1/user/profile
      * Updates the current user's profile data (username, email, avatar).
      */
     public function updateProfile(): ResponseInterface
@@ -30,6 +30,10 @@ class UserController extends BaseController
             'username' => 'required|min_length[3]|max_length[30]',
             'bio'      => 'permit_empty|max_length[500]',
         ];
+
+        if ($avatar && $avatar->isValid()) {
+            $rules['avatar'] = 'is_image[avatar]|mime_in[avatar,image/jpg,image/jpeg,image/png,image/webp]|max_size[avatar,2048]';
+        }
 
         if (!$this->validate($rules)) {
             return $this->failValidationErrors($this->validator->getErrors());

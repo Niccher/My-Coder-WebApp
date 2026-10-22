@@ -13,7 +13,7 @@
         <ul style="color: var(--landing-muted); line-height: 2.2;">
             <li><strong>Docker</strong> Engine v24+ and <strong>Docker Compose</strong> v2+ installed on your host.</li>
             <li><strong>Git</strong> to clone the repository.</li>
-            <li>Ports <code>9003</code> (app), <code>9306</code> (MySQL), and <code>9000</code> (phpMyAdmin) available on your host.</li>
+            <li>Ports <code>80</code> (app), <code>3306</code> (MySQL), and <code>8080</code> (Dozzle Log Viewer) available on your host.</li>
             <li>Minimum 1 GB RAM (2 GB recommended for parallel API requests).</li>
         </ul>
 
@@ -21,21 +21,14 @@
         <div class="docker-block">
             <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-clipboard me-1"></i>Copy</button>
             <pre><code># 1. Clone the repository
-git clone https://github.com/your-org/my-coder-webapp.git
-cd my-coder-webapp
+git clone https://github.com/Niccher/My-Coder-WebApp.git
+cd My-Coder-WebApp
 
-# 2. Configure environment
-cp .env.example .env
-# Edit .env with your database credentials and app URL
+# 2. Run automated 13-stage deployment pipeline
+bash scripts/deploy.sh
 
-# 3. Start all services
-docker compose up -d
-
-# 4. Run database migrations
-docker compose exec my-coder php spark migrate --all
-
-# 5. Open in your browser
-echo "Open http://localhost:9003"</code></pre>
+# 3. Open in your browser
+echo "Open http://localhost"</code></pre>
         </div>
 
         <h5 class="fw-semibold mt-5 mb-2">Architecture</h5>
@@ -46,17 +39,17 @@ echo "Open http://localhost:9003"</code></pre>
             <div class="feature-card" style="padding: 1.25rem;">
                 <div style="font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-database" style="color: #f39c12;"></i></div>
                 <h6 style="font-weight: 600;">MySQL 8.4</h6>
-                <p style="font-size: 0.85rem;">Persistent data store. Exposed on port <code>9306</code>. Uses a named volume <code>mysql-data</code> for persistence across restarts. Healthcheck configured via mysqladmin ping.</p>
+                <p style="font-size: 0.85rem;">Persistent data store. Exposed on standard port <code>3306</code>. Uses a named volume <code>mysql-data</code> for persistence across restarts. Healthcheck configured via mysqladmin ping.</p>
             </div>
             <div class="feature-card" style="padding: 1.25rem;">
                 <div style="font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-server" style="color: #3b82f6;"></i></div>
                 <h6 style="font-weight: 600;">myCoder App</h6>
-                <p style="font-size: 0.85rem;">PHP 8.3 + Apache with mod_rewrite. Exposed on port <code>9003</code>. Auto-runs migrations on first start via <code>entrypoint.sh</code>. Writable directory mounted for logs, cache, sessions, and uploads.</p>
+                <p style="font-size: 0.85rem;">PHP 8.4 (8.4.27) + Apache with mod_rewrite. Exposed on standard HTTP port <code>80</code>. Auto-runs migrations on first start via <code>entrypoint.sh</code>. Writable directory mounted for logs, cache, sessions, and uploads.</p>
             </div>
             <div class="feature-card" style="padding: 1.25rem;">
-                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-table" style="color: #22c55e;"></i></div>
-                <h6 style="font-weight: 600;">phpMyAdmin</h6>
-                <p style="font-size: 0.85rem;">Web-based database administration. Exposed on port <code>9000</code>. Auto-connected to the MySQL container via environment variables.</p>
+                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-terminal" style="color: #22c55e;"></i></div>
+                <h6 style="font-weight: 600;">Dozzle</h6>
+                <p style="font-size: 0.85rem;">Live container log viewer & resource metrics. Exposed on port <code>8080</code>. Read-only Docker socket integration with zero host overhead.</p>
             </div>
         </div>
 
@@ -65,7 +58,7 @@ echo "Open http://localhost:9003"</code></pre>
         <div class="docker-block">
             <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-clipboard me-1"></i>Copy</button>
             <pre><code># .env key settings
-app.baseURL = 'http://localhost:9003/'
+app.baseURL = 'http://localhost/'
 
 # Database — hostname must match the Docker service name
 database.default.hostname = mysql
@@ -90,7 +83,7 @@ AUTH_SEND_EMAIL_ON_REGISTER=false</code></pre>
             <pre><code>services:
   mysql:
     image: mysql:8.4
-    ports: ["9306:3306"]
+    ports: ["3306:3306"]
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: db_my_coder
@@ -103,19 +96,18 @@ AUTH_SEND_EMAIL_ON_REGISTER=false</code></pre>
 
   my-coder:
     build: .
-    ports: ["9003:80"]
+    ports: ["80:80"]
     environment:
       CI_ENVIRONMENT: production
     depends_on:
       mysql: { condition: service_healthy }
     volumes: [./writable:/var/www/html/writable]
 
-  phpmyadmin:
-    image: phpmyadmin:latest
-    ports: ["9000:80"]
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
+  dozzle:
+    image: amir20/dozzle:latest
+    ports: ["8080:8080"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
 volumes:
   mysql-data:</code></pre>

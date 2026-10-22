@@ -13,7 +13,7 @@ class ConversationsController extends BaseController
     use ResponseTrait;
 
     /**
-     * GET /api/conversations
+     * GET /api/v1/conversations
      * Returns all conversations for the current user (for sidebar listing)
      */
     public function index(): ResponseInterface
@@ -58,7 +58,7 @@ class ConversationsController extends BaseController
     }
 
     /**
-     * GET /api/conversations/{id}
+     * GET /api/v1/conversations/{id}
      * Returns a conversation with all messages
      */
     public function show($id): ResponseInterface
@@ -91,7 +91,7 @@ class ConversationsController extends BaseController
     }
 
     /**
-     * DELETE /api/conversations/{id}
+     * DELETE /api/v1/conversations/{id}
      */
     public function delete(int $id): ResponseInterface
     {
@@ -111,7 +111,7 @@ class ConversationsController extends BaseController
     }
 
     /**
-     * POST /api/conversations/{id}/branch
+     * POST /api/v1/conversations/{id}/branch
      * Body: { "message_id": int }
      * Creates a new conversation forked from the given message point.
      */
@@ -173,7 +173,47 @@ class ConversationsController extends BaseController
     }
 
     /**
-     * PATCH /api/conversations/{id}/folder
+     * PATCH/PUT /api/v1/conversations/{id}
+     */
+    public function update(int $id): ResponseInterface
+    {
+        $userId    = auth()->id();
+        $convModel = new ConversationModel();
+        $conv      = $convModel->findForUser($id, $userId);
+
+        if (!$conv) {
+            return $this->failNotFound('Conversation not found.');
+        }
+
+        $body = $this->request->getJSON(true) ?? [];
+        $data = [];
+
+        if (isset($body['title'])) {
+            $title = trim($body['title']);
+            if ($title !== '') {
+                $data['title'] = $title;
+            }
+        }
+        if (array_key_exists('folder_id', $body)) {
+            $data['folder_id'] = !empty($body['folder_id']) ? (int) $body['folder_id'] : null;
+        }
+        if (array_key_exists('persona_id', $body)) {
+            $data['persona_id'] = !empty($body['persona_id']) ? (int) $body['persona_id'] : null;
+        }
+
+        if (!empty($data)) {
+            $data['updated_at'] = date('Y-m-d H:i:s');
+            $convModel->update($id, $data);
+        }
+
+        return $this->respond([
+            'message' => 'Conversation updated successfully.',
+            'conversation' => $convModel->find($id),
+        ]);
+    }
+
+    /**
+     * PATCH /api/v1/conversations/{id}/folder
      */
     public function updateFolder(int $id): ResponseInterface
     {

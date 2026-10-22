@@ -23,19 +23,33 @@ class FoldersController extends BaseController
         return $this->respond($folders);
     }
 
-    public function save()
+    public function save($id = null)
     {
         $userId = auth()->id();
-        $name = $this->request->getJSON(true)['name'] ?? '';
+        $body = $this->request->getJSON(true) ?? [];
+        $name = trim($body['name'] ?? '');
+        $id = $id ?? (int) ($body['id'] ?? 0);
 
         if (empty($name)) {
-            return $this->fail('Folder name is required');
+            return $this->fail('Folder name is required', 422);
         }
 
         $db = Database::connect();
+        if ($id > 0) {
+            $folder = $db->table('folders')->where('id', $id)->where('user_id', $userId)->get()->getRow();
+            if (!$folder) {
+                return $this->failNotFound('Folder not found');
+            }
+            $db->table('folders')->where('id', $id)->where('user_id', $userId)->update([
+                'name'       => $name,
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+            return $this->respond(['id' => $id, 'name' => $name, 'message' => 'Folder updated successfully']);
+        }
+
         $data = [
-            'user_id' => $userId,
-            'name'    => $name,
+            'user_id'    => $userId,
+            'name'       => $name,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ];
@@ -55,11 +69,11 @@ class FoldersController extends BaseController
             return $this->failNotFound('Folder not found');
         }
 
-        // Unlink conversations
-        $db->table('conversations')->where('folder_id', $id)->update(['folder_id' => null]);
+        // Unlink conversations belonging to this user
+        $db->table('conversations')->where('folder_id', $id)->where('user_id', $userId)->update(['folder_id' => null]);
         
-        // Delete folder
-        $db->table('folders')->where('id', $id)->delete();
+        // Delete folder strictly for this user
+        $db->table('folders')->where('id', $id)->where('user_id', $userId)->delete();
 
         return $this->respondDeleted(['id' => $id]);
     }

@@ -18,11 +18,11 @@ class PersonasController extends BaseController
         return $this->respond($model->getForUser($userId));
     }
 
-    public function save(): ResponseInterface
+    public function save(?int $id = null): ResponseInterface
     {
         $userId = auth()->id();
-        $body   = $this->request->getJSON(true);
-        $id     = (int) ($body['id'] ?? 0);
+        $body   = $this->request->getJSON(true) ?? [];
+        $id     = $id ?? (int) ($body['id'] ?? 0);
         $name   = trim($body['name'] ?? '');
         $instructions = trim($body['instructions'] ?? '');
         $isDefault    = (bool) ($body['is_default'] ?? false);
@@ -50,13 +50,16 @@ class PersonasController extends BaseController
                 return $this->failNotFound('Persona not found.');
             }
             $model->update($id, $data);
-            $newId = $id;
-        } else {
-            $newId = $model->insert($data, true);
+            return $this->respond([
+                'message' => 'Persona updated successfully.',
+                'id'      => $id,
+            ]);
         }
 
-        return $this->respond([
-            'message' => 'Persona saved successfully.',
+        $newId = $model->insert($data, true);
+
+        return $this->respondCreated([
+            'message' => 'Persona created successfully.',
             'id'      => $newId,
         ]);
     }

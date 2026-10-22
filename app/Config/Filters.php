@@ -116,6 +116,6 @@ class Filters extends BaseFilters
      * @var array<string, array<string, list<string>>>
      */
     public array $filters = [
-        'auth-rates' => ['before' => ['api/chat']]
+        'auth-rates' => ['before' => ['api/v1/chat']]
     ];
 }

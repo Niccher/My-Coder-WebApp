@@ -3,9 +3,9 @@
 /**
  * SettingsController — Save and retrieve per-user model configurations.
  *
- * Slots 1–3 are standard AI models. Slot 4 is the Master Model (evaluator).
+ * Slots 1–6 are standard AI models. Slot 7 is the Master Model (evaluator).
  *
- * Supported providers: gemini | deepseek | grok | openai
+ * Supported providers: gemini | deepseek | grok | openai | kimi | minimax | groq | openrouter
  */
 
 namespace App\Controllers\Api;
@@ -20,7 +20,7 @@ class SettingsController extends BaseController
     use ResponseTrait;
 
     /**
-     * GET /api/settings
+     * GET /api/v1/settings
      * Returns the current user's model config for all 4 slots.
      * API keys are masked (only first/last 4 chars visible).
      */
@@ -47,7 +47,7 @@ class SettingsController extends BaseController
     }
 
     /**
-     * POST /api/settings
+     * POST /api/v1/settings
      *
      * Body (JSON):
      *   slots: [

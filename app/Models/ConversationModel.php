@@ -9,7 +9,7 @@ class ConversationModel extends Model
     protected $table      = 'conversations';
     protected $primaryKey = 'id';
     protected $useTimestamps = true;
-    protected $allowedFields = ['uuid', 'user_id', 'title', 'persona_id', 'folder_id'];
+    protected $allowedFields = ['uuid', 'user_id', 'title', 'persona_id', 'folder_id', 'updated_at'];
     protected $beforeInsert  = ['generateUuid'];
 
     protected function generateUuid(array $data)
