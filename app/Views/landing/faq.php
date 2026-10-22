@@ -26,7 +26,54 @@
                 <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="faq-answer">
-                <p>myCoder is a self-hosted, multi-model AI orchestration platform. You send one prompt and it queries up to 6 AI models in parallel (Gemini, DeepSeek, Grok, OpenAI, Kimi, MiniMax, Groq, OpenRouter). An optional Master Model then evaluates all responses and synthesizes the best answer. It's built with PHP 8.3 and CodeIgniter 4, and runs entirely on your own infrastructure via Docker.</p>
+                <p>myCoder is a self-hosted, multi-model AI orchestration platform. You send one prompt and it queries up to 6 AI models in parallel (Gemini, DeepSeek, Grok, OpenAI, Kimi, MiniMax, Groq, OpenRouter). An optional Master Model then evaluates all responses and synthesizes the best answer. It's built with PHP 8.4.27 and CodeIgniter 4.6.4, backed by MySQL 8.4 LTS and Dozzle log monitoring, and runs entirely on your own infrastructure via Docker.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                <span>What supporting containers run alongside the WebApp?</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                <p>myCoder orchestrates three specialized containers on an isolated Docker bridge network (<code>hosts-shared-network</code>):</p>
+                <ul style="margin: 0.5rem 0 0.5rem 1.25rem; color: var(--landing-muted); font-size: 0.95rem; line-height: 1.6;">
+                    <li><strong><code>my-coder-webapp</code> (:80)</strong>: Apache HTTP server running PHP 8.4.27, handling the CodeIgniter 4 framework, sessions, frontend views, and non-blocking parallel cURL dispatches.</li>
+                    <li><strong><code>shared-mysql</code> (:3306)</strong>: Official MySQL 8.4 LTS image configured with persistent volume storage (<code>mysql-data</code>), utf8mb4 collation, and automated TCP socket health checking.</li>
+                    <li><strong><code>shared-dozzle</code> (:8080)</strong>: Lightweight real-time log viewer connected to the host Docker daemon socket (read-only), allowing you to tail container stdout/stderr live from any browser without SSH.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                <span>How do I monitor application and container logs?</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                <p>You can access real-time logs via Dozzle at <code>http://&lt;your-server-ip&gt;:8080</code>. Dozzle streams logs directly from all three running containers with live search, filtering, and memory/CPU usage indicators. Alternatively, from the terminal you can run <code>docker compose logs -f [service_name]</code>.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                <span>How does the 13-stage deployment script (<code>deploy.sh</code>) work?</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                <p>The included <code>./scripts/deploy.sh</code> script provides an automated, idempotent production deployment pipeline that runs 13 sequential phases:</p>
+                <ol style="margin: 0.5rem 0 0.5rem 1.25rem; color: var(--landing-muted); font-size: 0.95rem; line-height: 1.6;">
+                    <li>Detects the host public/private IP addresses to configure <code>app.baseURL</code>.</li>
+                    <li>Checks system resources (ensures &ge; 1 GB RAM and sufficient disk space).</li>
+                    <li>Validates the Git repository and remote tracking branch.</li>
+                    <li>Synchronizes <code>.env</code> settings with sane production defaults.</li>
+                    <li>Safely tears down previous container iterations.</li>
+                    <li>Builds the PHP 8.4 image and launches containers in detached mode.</li>
+                    <li>Pre-configures <code>writable/</code> directory permissions for session and cache stability.</li>
+                    <li>Probes MySQL container health and tests TCP query readiness.</li>
+                    <li>Executes automated database migrations via <code>php spark migrate --all</code>.</li>
+                    <li>Verifies Dozzle log viewer readiness on port 8080.</li>
+                    <li>Probes the WebApp HTTP endpoint on port 80 for HTTP 200/302 response.</li>
+                    <li>Prunes dangling Docker builder cache and unused images to preserve disk space.</li>
+                    <li>Prints an operational summary with clickable endpoints for the WebApp and Dozzle.</li>
+                </ol>
             </div>
         </div>
         <div class="faq-item">
@@ -71,7 +118,7 @@
                 <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="faq-answer">
-                <p>You need a Linux server (or any host with Docker) with at least 1 GB RAM and Docker Engine 24+ with Docker Compose v2+. The application runs on PHP 8.3 with Apache inside the container. For a small team, 2 GB RAM and 2 CPU cores is recommended to handle parallel API requests smoothly.</p>
+                <p>You need a Linux server (or any host with Docker) with at least 1 GB RAM (2 GB recommended) and Docker Engine 24+ with Docker Compose v2+. The application runs on PHP 8.4 with Apache inside the container.</p>
             </div>
         </div>
         <div class="faq-item">
@@ -80,7 +127,7 @@
                 <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="faq-answer">
-                <p>Yes. Since myCoder is a standard PHP application, you can deploy it directly on any Apache/Nginx server with PHP 8.3+ and MySQL 8.4. Clone the repo, run <code>composer install</code>, configure your <code>.env</code> file, point your web server's document root to the <code>public/</code> directory, and run <code>php spark migrate --all</code>. However, Docker is the recommended and tested deployment method.</p>
+                <p>Yes. Since myCoder is a standard PHP application, you can deploy it directly on any Apache/Nginx server with PHP 8.4+ and MySQL 8.4. Clone the repo, run <code>composer install</code>, configure your <code>.env</code> file, point your web server's document root to the <code>public/</code> directory, and run <code>php spark migrate --all</code>. However, Docker is the recommended and tested deployment method.</p>
             </div>
         </div>
         <div class="faq-item">
@@ -89,7 +136,7 @@
                 <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="faq-answer">
-                <p>Pull the latest changes: <code>git pull</code>, rebuild the images: <code>docker compose build --no-cache</code>, and restart: <code>docker compose up -d</code>. New database migrations run automatically via the entrypoint script.</p>
+                <p>Simply run <code>git pull</code> followed by <code>./scripts/deploy.sh</code>. The deployment script will safely re-build images, restart containers, probe database readiness, and apply any new database schema migrations automatically.</p>
             </div>
         </div>
         <div class="faq-item">

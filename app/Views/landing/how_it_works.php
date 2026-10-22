@@ -56,23 +56,71 @@
 
 <section class="section-dark">
     <div class="container-custom">
-        <h2 class="section-title text-center">Behind the Scenes</h2>
-        <p class="section-subtitle text-center">Built with PHP 8.3 and CodeIgniter 4, designed for performance and reliability.</p>
+        <h2 class="section-title text-center">Containerized Architecture &amp; Supporting Services</h2>
+        <p class="section-subtitle text-center">Powered by PHP 8.4 (8.4.27) and CodeIgniter 4.6.4, orchestrated into three production-grade Docker containers.</p>
+        
+        <div class="arch-grid">
+            <div class="arch-card">
+                <span class="arch-port">:80</span>
+                <div class="feature-icon blue"><i class="fa-solid fa-server"></i></div>
+                <h5>myCoder WebApp</h5>
+                <span class="badge-service mb-3"><i class="fa-brands fa-php"></i> PHP 8.4.27 &bull; Apache 2.4</span>
+                <p>The primary application container. Serves the web interface and versioned <code>/api/v1/</code> REST API on standard port 80. Features an automated startup entrypoint that verifies database readiness, runs CodeIgniter Spark migrations (<code>php spark migrate --all</code>), and provisions <code>writable/</code> permissions for sessions, cache, logs, and uploads.</p>
+            </div>
+
+            <div class="arch-card">
+                <span class="arch-port">:3306</span>
+                <div class="feature-icon purple"><i class="fa-solid fa-database"></i></div>
+                <h5>MySQL 8.4 LTS Relational DB</h5>
+                <span class="badge-service mb-3"><i class="fa-solid fa-hard-drive"></i> MySQL 8.4 &bull; Volume: mysql-data</span>
+                <p>The persistent enterprise database store exposed on standard port 3306. Stores encrypted user credentials, API keys, conversations, personas, and folders. Configured with strict SQL modes and a dual-layer TCP healthcheck (<code>mysqladmin ping -h 127.0.0.1 && SELECT 1 FROM db_my_coder</code>) ensuring zero race conditions during cold boots.</p>
+            </div>
+
+            <div class="arch-card">
+                <span class="arch-port">:8080</span>
+                <div class="feature-icon green"><i class="fa-solid fa-terminal"></i></div>
+                <h5>Dozzle Container Log Viewer</h5>
+                <span class="badge-service mb-3"><i class="fa-brands fa-docker"></i> amir20/dozzle:latest &bull; Real-time</span>
+                <p>Real-time web-based log streaming and resource monitor accessible on port 8080. Connects to the host's Docker socket in read-only mode to stream Apache access/error logs, PHP exceptions, and MySQL transaction logs without performance impact or host file footprint.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container-custom">
+        <h2 class="section-title text-center">Behind the Scenes: Technical Highlights</h2>
+        <p class="section-subtitle text-center">Engineered for security, concurrency, and self-hosted privacy.</p>
         <div class="feature-grid">
             <div class="feature-card">
                 <div class="feature-icon blue"><i class="fa-solid fa-bolt"></i></div>
-                <h5>Non-Blocking I/O</h5>
-                <p>All upstream AI requests use <code>curl_multi</code> for parallel execution. Your prompt reaches every model simultaneously — total latency is the slowest single model, not the sum of all.</p>
+                <h5>Non-Blocking Multi-Model I/O</h5>
+                <p>All upstream AI requests use PHP's <code>curl_multi</code> interface for asynchronous execution. Prompts reach all 6 configured models simultaneously &mdash; your total wait time is governed by the single slowest model, not the cumulative sum.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon purple"><i class="fa-solid fa-database"></i></div>
-                <h5>Immutable Message History</h5>
-                <p>Messages are stored with a strict <code>role</code> field (user/ai) and are never modified after creation. Each AI response is tagged with its source model name for full provenance.</p>
+                <div class="feature-icon purple"><i class="fa-solid fa-network-wired"></i></div>
+                <h5>Isolated Context Memory</h5>
+                <p>When continuing a thread, each model is fed only its own prior responses alongside the user's prompt. Models never cross-contaminate each other's memories, preventing compound hallucinations.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon green"><i class="fa-solid fa-lock"></i></div>
-                <h5>Encrypted at Rest</h5>
-                <p>API keys are encrypted in the database using AES-256-CTR via CodeIgniter's encryption library. Decrypted only in memory at request time. The encryption key lives in your <code>.env</code> file only.</p>
+                <h5>Encrypted at Rest (AES-256-CTR)</h5>
+                <p>Third-party provider API keys are encrypted in MySQL using AES-256-CTR with OpenSSL. Keys are decrypted exclusively in memory when executing outbound API requests. The secret key is stored only in your local <code>.env</code> file.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon orange"><i class="fa-solid fa-code"></i></div>
+                <h5>Strict RESTful API v1</h5>
+                <p>Every client action in the modern chat interface communicates over a versioned <code>/api/v1/</code> REST API with standard HTTP semantics (POST 201 Created, PUT/PATCH for folder &amp; conversation updates, DELETE for purges).</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon cyan"><i class="fa-solid fa-shield-halved"></i></div>
+                <h5>Container Self-Healing &amp; Auto-Migrations</h5>
+                <p>The container entrypoint dynamically resolves database health over TCP, auto-runs all pending migrations, and provisions storage permissions before launching Apache, eliminating manual configuration steps.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon pink"><i class="fa-solid fa-file-code"></i></div>
+                <h5>Privacy &amp; File Context Streaming</h5>
+                <p>Files uploaded in chat are parsed in memory, converted into contextual text snippets, and streamed directly to your selected models. Raw files are never stored in the database or exposed to third parties.</p>
             </div>
         </div>
     </div>

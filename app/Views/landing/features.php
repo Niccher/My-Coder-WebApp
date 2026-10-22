@@ -41,6 +41,31 @@
                 <p>Run on your own infrastructure via Docker. API keys are encrypted at rest using AES-256-CTR. Full data control — no third-party servers ever see your prompts or model responses.</p>
             </div>
             <div class="feature-card">
+                <div class="feature-icon orange"><i class="fa-solid fa-chart-line"></i></div>
+                <h5>Live Log Observability (Dozzle :8080)</h5>
+                <p>Monitor stdout/stderr streams across all 3 containers in real time via Dozzle. Inspect HTTP requests, PHP warnings, database health probes, and migration outputs without requiring server SSH keys.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon green"><i class="fa-solid fa-terminal"></i></div>
+                <h5>13-Stage Automated Deployment</h5>
+                <p>Zero-guesswork deployment via <code>./scripts/deploy.sh</code>. Automates public IP resolution, disk and RAM health checks, environment sync, TCP database readiness testing, and writable permissions.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon blue"><i class="fa-solid fa-database"></i></div>
+                <h5>MySQL 8.4 LTS Persistence</h5>
+                <p>Enterprise data storage backed by official MySQL 8.4 LTS. Volume persistence via <code>mysql-data</code>, automatic database seeding, utf8mb4 collation, and container TCP health probe integration.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon cyan"><i class="fa-brands fa-php"></i></div>
+                <h5>PHP 8.4.27 High-Performance Runtime</h5>
+                <p>Powered by the latest PHP 8.4 engine on Apache with OPcache bytecode acceleration, JIT compilation support, and hardened permissions for file sessions and log storage.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon purple"><i class="fa-solid fa-network-wired"></i></div>
+                <h5>Strict RESTful API (v1)</h5>
+                <p>Clean, decoupled API architecture under <code>/api/v1/</code> powering frontend actions: chat generation, model assignment, personas, folder grouping, export payloads, and system settings.</p>
+            </div>
+            <div class="feature-card">
                 <div class="feature-icon indigo"><i class="fa-solid fa-palette"></i></div>
                 <h5>Three Visual Themes</h5>
                 <p>Choose between Dark (default), Solarized, or White themes. Persisted in localStorage. The entire UI adapts seamlessly, including chat bubbles, sidebar, and settings modals.</p>

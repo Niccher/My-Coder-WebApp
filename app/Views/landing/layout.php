@@ -391,6 +391,85 @@
             .hero-desc { font-size: 1rem; }
             .demo-model-response { grid-template-columns: 1fr; }
         }
+
+        /* Supporting Container & Pipeline Components */
+        .badge-service {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.65rem;
+            border-radius: 6px;
+            background: color-mix(in srgb, var(--accent) 12%, transparent);
+            color: var(--accent);
+            border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+        }
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .arch-card {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.75rem;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .arch-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+        }
+        .arch-port {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: color-mix(in srgb, var(--text-main) 8%, transparent);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.25rem 0.6rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .pipeline-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 0.85rem;
+            margin-top: 1.5rem;
+        }
+        .pipeline-item {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.85rem 1.1rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            transition: border-color 0.2s;
+        }
+        .pipeline-item:hover {
+            border-color: var(--accent);
+        }
+        .pipeline-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: color-mix(in srgb, var(--accent) 18%, transparent);
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body data-theme="dark">
