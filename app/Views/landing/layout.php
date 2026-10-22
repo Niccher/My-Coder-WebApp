@@ -62,7 +62,12 @@
     <link rel="stylesheet" href="<?= base_url('css/chat.css') ?>">
 
     <style>
-        * { box-sizing: border-box; }
+        html, body {
+            height: auto !important;
+            min-height: 100% !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+        }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg-dark);

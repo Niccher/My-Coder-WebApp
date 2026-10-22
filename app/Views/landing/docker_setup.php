@@ -188,6 +188,7 @@ AUTH_SEND_EMAIL_ON_REGISTER = false</code></pre>
       - database.default.DBDriver=MySQLi
     volumes:
       - .:/var/www/html
+      - /var/www/html/vendor
     depends_on:
       mysql:
         condition: service_healthy

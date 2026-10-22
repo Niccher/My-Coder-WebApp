@@ -27,6 +27,12 @@
     <link rel="stylesheet" href="<?= base_url('css/chat.css') ?>">
 
     <style>
+        html, body {
+            height: auto !important;
+            min-height: 100% !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+        }
         .auth-navbar {
             background: color-mix(in srgb, var(--bg-dark) 85%, transparent);
             backdrop-filter: blur(12px);

@@ -29,7 +29,12 @@
     <!-- App theme CSS -->
     <link rel="stylesheet" href="<?= base_url('css/chat.css') ?>">
 
-    <style>
+        html, body {
+            height: auto !important;
+            min-height: 100% !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+        }
         body { font-family: 'Inter', sans-serif; margin: 0; }
         .error-container {
             min-height: 100vh;
